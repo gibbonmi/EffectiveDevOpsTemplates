@@ -15,7 +15,7 @@ from troposphere import (
 )
 
 ApplicationPort = "3000"
-PublicCidrIp = str(ip_network(get_ip()))
+PublicCidrIp = "0.0.0.0/0"
 
 t = Template()
 
