@@ -1,4 +1,7 @@
 """Generating CloudFormation template."""
+from ipaddress import ip_network
+
+from ipify import get_ip
 
 from troposphere import (
     Base64,
@@ -12,6 +15,7 @@ from troposphere import (
 )
 
 ApplicationPort = "3000"
+PublicCidrIp = str(ip_network(get_ip()))
 
 t = Template()
 
@@ -19,9 +23,9 @@ t.add_description("Effective DevOps in AWS: HelloWorld web application")
 
 t.add_parameter(Parameter(
     "KeyPair",
-    Description="Name an existing EC2 KeyPair to SSH",
+    Description="Name of an existing EC2 KeyPair to SSH",
     Type="AWS::EC2::KeyPair::KeyName",
-    ConstraintDescription="Must be the name of an existing EC2 KeyPair.",
+    ConstraintDescription="must be the name of an existing EC2 KeyPair.",
 ))
 
 t.add_resource(ec2.SecurityGroup(
@@ -32,22 +36,22 @@ t.add_resource(ec2.SecurityGroup(
             IpProtocol="tcp",
             FromPort="22",
             ToPort="22",
-            CidrIp="0.0.0.0/0"
+            CidrIp=PublicCidrIp,
         ),
         ec2.SecurityGroupRule(
             IpProtocol="tcp",
             FromPort=ApplicationPort,
             ToPort=ApplicationPort,
-            CidrIp="0.0.0.0/0"
-        )
-    ]
+            CidrIp="0.0.0.0/0",
+        ),
+    ],
 ))
 
-ud = Base64(Join('\n',[
-    "#!/bin/bash"
+ud = Base64(Join('\n', [
+    "#!/bin/bash",
     "sudo yum install --enablerepo=epel -y nodejs",
-    "wget http://bit.ly/2vESNuc -O /home/ec2-user/helloworld.js", 
-    "wget http://bit.ly/2vVvT18 -O /etc/init/helloworld.conf", 
+    "wget http://bit.ly/2vESNuc -O /home/ec2-user/helloworld.js",
+    "wget http://bit.ly/2vVvT18 -O /etc/init/helloworld.conf",
     "start helloworld"
 ]))
 
@@ -72,7 +76,7 @@ t.add_output(Output(
     Value=Join("", [
         "http://", GetAtt("instance", "PublicDnsName"),
         ":", ApplicationPort
-    ])
+    ]),
 ))
 
 print(t.to_json())
