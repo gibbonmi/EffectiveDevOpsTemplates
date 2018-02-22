@@ -57,6 +57,7 @@ AnsiblePullCmd = \
 
 ud = Base64(Join('\n', [
     "#!/bin/bash",
+    "yum -y update",
     "yum install --enablerepo=epel -y git",
     "pip install ansible",
     AnsiblePullCmd,

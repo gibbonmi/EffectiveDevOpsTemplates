@@ -76,10 +76,11 @@
                             "\n",
                             [
                                 "#!/bin/bash",
-                                "yum install --enablerepo=epel -y git",
-                                "pip install ansible",
-                                "/usr/bin/ansible-pull -U https://github.com/gibbonmi/ansible helloworld.yml -i localhost",
-                                "echo '*/10 * * * * /usr/bin/ansible-pull -U https://github.com/gibbonmi/ansible helloworld.yml -i localhost' > /etc/cron.d/ansible-pull"
+                                "sudo yum update -y",
+                                "sudo yum install --enablerepo=epel -y git",
+                                "sudo pip install ansible",
+                                "ansible-pull -U https://github.com/gibbonmi/ansible helloworld.yml -i localhost",
+                                "echo '*/10 * * * * ansible-pull -U https://github.com/gibbonmi/ansible helloworld.yml -i localhost' > sudo /etc/cron.d/ansible-pull"
                             ]
                         ]
                     }
